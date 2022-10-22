@@ -19,3 +19,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
 }
+
+import SwiftUI
+
+struct AppVCProvider: PreviewProvider {
+    static var previews: some View {
+        Container().edgesIgnoringSafeArea(.all)
+            .previewDevice("iPhone 13 Pro Max")
+    }
+    
+    struct Container: UIViewControllerRepresentable {
+        
+        let tabBarVC = ViewController()
+        
+        func makeUIViewController(context: Context) -> some UIViewController {
+            tabBarVC
+        }
+        
+        func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
+            
+        }
+    }
+}
