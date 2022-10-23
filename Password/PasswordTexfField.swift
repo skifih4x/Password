@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol PasswordTexfFieldDelegate: AnyObject {
+    func editingChandeg(_ sender: PasswordTexfField)
+}
+
 class PasswordTexfField: UIView {
     
     let lockImageView = UIImageView(image: UIImage(systemName: "lock.fill"))
@@ -15,6 +19,8 @@ class PasswordTexfField: UIView {
     let eyeButton = UIButton(type: .custom)
     let diverView = UIView()
     let errorLabel = UILabel()
+    
+    weak var delegate: PasswordTexfFieldDelegate?
     
     init(placeHolderText: String) {
         self.placeHolderText = placeHolderText
@@ -43,10 +49,11 @@ extension PasswordTexfField {
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.isSecureTextEntry = true
         textField.placeholder = placeHolderText
-        //        textField.delegate = self
+        textField.delegate = self
         textField.keyboardType = .asciiCapable
         textField.attributedPlaceholder = NSAttributedString(string: placeHolderText, attributes: [NSAttributedString.Key.foregroundColor : UIColor.secondaryLabel])
-        
+         
+        textField.addTarget(self, action: #selector(textFieldEditingDelegate), for: .editingChanged)
         eyeButton.translatesAutoresizingMaskIntoConstraints = false
         eyeButton.setImage(UIImage(systemName: "eye"), for: .normal)
         eyeButton.setImage(UIImage(systemName: "eye.slash.circle"), for: .selected)
@@ -61,7 +68,7 @@ extension PasswordTexfField {
         errorLabel.text = "Enter your password"
         errorLabel.numberOfLines = 0
         errorLabel.lineBreakMode = .byWordWrapping
-        errorLabel.isHidden = false
+        errorLabel.isHidden = true
         
     }
     
@@ -116,15 +123,21 @@ extension PasswordTexfField {
 }
 
 // MARK: - Action
-extension PasswordTexfField{
+extension PasswordTexfField {
     @objc func togglePasswordView(_ sender: UIButton) {
         textField.isSecureTextEntry.toggle()
         eyeButton.isSelected.toggle()
     }
-}
-extension PasswordTexfField: UITextViewDelegate {
     
-    func textViewDidEndEditing(_ textView: UITextView) {
+    @objc func textFieldEditingDelegate(_ sender: UITextView) {
+        delegate?.editingChandeg(self)
+    }
+}
+
+// MARK: - UITextFieldDelegate
+extension PasswordTexfField: UITextFieldDelegate {
+    
+    private func textViewDidEndEditing(_ textView: UITextView) {
         textField.endEditing(true)
     }
 }
