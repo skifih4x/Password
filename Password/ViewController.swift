@@ -16,12 +16,26 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
        super.viewDidLoad()
+        setup()
         style()
         layout()
     }
 }
 
 extension ViewController {
+    
+    func setup() {
+        setupDismissKeyboardGesture()
+    }
+    
+    private func setupDismissKeyboardGesture() {
+        let dismissKeyboardTap = UITapGestureRecognizer(target: self, action: #selector(viewTapped))
+        view.addGestureRecognizer(dismissKeyboardTap)
+    }
+    
+    @objc func viewTapped(_ recognizer: UITapGestureRecognizer) {
+        view?.endEditing(true)
+    }
     func style() {
         
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -58,11 +72,16 @@ extension ViewController {
 }
 
 
-// MARK: - PAsswordTextFieldDelegate
+// MARK: - PasswordTextFieldDelegate
 extension ViewController: PasswordTexfFieldDelegate {
+    
     func editingChandeg(_ sender: PasswordTexfField) {
         if sender === newPasswordTextField {
             statusView.updateDisplay(sender.textField.text ?? "")
         }
+    }
+    
+    func editingDidEnd(_ sender: PasswordTexfField) {
+        print("foo - textfieldDidEndEdiditin: \(sender.textField.text)")
     }
 }

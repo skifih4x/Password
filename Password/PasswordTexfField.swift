@@ -9,6 +9,7 @@ import UIKit
 
 protocol PasswordTexfFieldDelegate: AnyObject {
     func editingChandeg(_ sender: PasswordTexfField)
+    func editingDidEnd(_ sender: PasswordTexfField)
 }
 
 class PasswordTexfField: UIView {
@@ -39,6 +40,7 @@ class PasswordTexfField: UIView {
 }
 
 extension PasswordTexfField {
+
     
     func style() {
         translatesAutoresizingMaskIntoConstraints = false
@@ -137,7 +139,12 @@ extension PasswordTexfField {
 // MARK: - UITextFieldDelegate
 extension PasswordTexfField: UITextFieldDelegate {
     
-    private func textViewDidEndEditing(_ textView: UITextView) {
+    func textFieldDidEndEditing(_ textField: UITextField) {
+
+        delegate?.editingDidEnd(self)
+    }
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.endEditing(true)
+        return true
     }
 }
