@@ -8,20 +8,39 @@
 import UIKit
 
 protocol PasswordTexfFieldDelegate: AnyObject {
-    func editingChandeg(_ sender: PasswordTexfField)
-    func editingDidEnd(_ sender: PasswordTexfField)
+    func editingChandeg(_ sender: PasswordTextField)
+    func editingDidEnd(_ sender: PasswordTextField)
 }
 
-class PasswordTexfField: UIView {
+
+class PasswordTextField: UIView {
+    /**
+     A function one passes in to do custom validation on the text field.
+     
+     - Parameter: textValue: The value of text to validate
+     - Returns: A Bool indicating whether text is valid, and if not a String containing an error message
+     */
+    
+    typealias CustomValidation = (_ textValue: String?) -> (Bool, String)?
     
     let lockImageView = UIImageView(image: UIImage(systemName: "lock.fill"))
     let textField = UITextField()
-    let placeHolderText: String
     let eyeButton = UIButton(type: .custom)
     let diverView = UIView()
     let errorLabel = UILabel()
     
+    let placeHolderText: String
+    var customValidation: CustomValidation? // add
     weak var delegate: PasswordTexfFieldDelegate?
+    
+    var text: String? {
+        get {
+            return textField.text
+        }
+        set {
+            textField.text = newValue
+        }
+    }
     
     init(placeHolderText: String) {
         self.placeHolderText = placeHolderText
@@ -39,12 +58,12 @@ class PasswordTexfField: UIView {
     }
 }
 
-extension PasswordTexfField {
-
+extension PasswordTextField {
+    
     
     func style() {
         translatesAutoresizingMaskIntoConstraints = false
-//        backgroundColor = .systemOrange
+        //        backgroundColor = .systemOrange
         
         lockImageView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -54,7 +73,7 @@ extension PasswordTexfField {
         textField.delegate = self
         textField.keyboardType = .asciiCapable
         textField.attributedPlaceholder = NSAttributedString(string: placeHolderText, attributes: [NSAttributedString.Key.foregroundColor : UIColor.secondaryLabel])
-         
+        
         textField.addTarget(self, action: #selector(textFieldEditingDelegate), for: .editingChanged)
         eyeButton.translatesAutoresizingMaskIntoConstraints = false
         eyeButton.setImage(UIImage(systemName: "eye"), for: .normal)
@@ -125,7 +144,7 @@ extension PasswordTexfField {
 }
 
 // MARK: - Action
-extension PasswordTexfField {
+extension PasswordTextField {
     @objc func togglePasswordView(_ sender: UIButton) {
         textField.isSecureTextEntry.toggle()
         eyeButton.isSelected.toggle()
@@ -137,14 +156,39 @@ extension PasswordTexfField {
 }
 
 // MARK: - UITextFieldDelegate
-extension PasswordTexfField: UITextFieldDelegate {
+extension PasswordTextField: UITextFieldDelegate {
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-
+        
         delegate?.editingDidEnd(self)
     }
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.endEditing(true)
         return true
+    }
+}
+
+
+// MARK: - Validation
+extension PasswordTextField {
+    func validate() -> Bool {
+        if let customValidation = customValidation,
+            let customValidationResult = customValidation(text),
+            customValidationResult.0 == false {
+            showError(customValidationResult.1)
+            return false
+        }
+        clearError()
+        return true
+    }
+    
+    private func showError(_ errorMessage: String) {
+        errorLabel.isHidden = false
+        errorLabel.text = errorMessage
+    }
+
+    private func clearError() {
+        errorLabel.isHidden = true
+        errorLabel.text = ""
     }
 }
