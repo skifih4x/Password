@@ -158,8 +158,6 @@ extension ViewController {
               let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue,
               let currentTextField = UIResponder.currentFirst() as? UITextField else { return }
         
-
-        
         let keyboardTopY = keyboardFrame.cgRectValue.origin.y
     
         let convertedTextFieldFrame = view.convert(currentTextField.frame, from: currentTextField.superview)
@@ -180,7 +178,7 @@ extension ViewController {
 
 // MARK: Actions
 extension ViewController {
-
+ 
     @objc func resetPasswordButtonTapped(sender: UIButton) {
         view.endEditing(true)
 
